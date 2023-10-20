@@ -1,0 +1,17 @@
+# CMakeList.txt: проект CMake для lab0; включите исходный код и определения,
+# укажите здесь логику для конкретного проекта.
+#
+cmake_minimum_required (VERSION 3.22)
+
+set(CMAKE_CXX_STANDARD 20)
+# set(CMAKE_CXX_STANDARD_REQUIRED ON)
+
+project ("lab1")
+
+# Добавьте источник в исполняемый файл этого проекта.
+add_executable (lab1.exe "src/main.cpp" "src/buffer.h" "src/buffer.cpp")
+target_compile_options(lab1.exe PRIVATE -Wall)
+# set_property(TARGET word_count PROPERTY CXX_STANDARD 20)
+
+# TODO: Добавьте тесты и целевые объекты, если это необходимо.
+
