@@ -34,6 +34,14 @@ CircularBuffer::CircularBuffer(const CircularBuffer& cb) {
 	Size = cb.size();
 }
 
+CircularBuffer::CircularBuffer(std::initializer_list<value_type> list) : CircularBuffer(list.size()) {
+	size_t i = 0;
+	for (value_type val : list) {
+		buffer[i++] = val;
+	}
+	Size = list.size();
+}
+
 value_type& CircularBuffer::operator[](int i) {
 	return buffer[(bufferStart + i) % capacity()];
 }
@@ -114,16 +122,14 @@ void CircularBuffer::set_capacity(size_t new_capacity) {
 	if (new_capacity == capacity()) {
 		return;
 	}
-	size_t newSize = std::min(Size, new_capacity);
+	size_t newSize = std::min(Size, new_capacity); // if it shrinks
 	auto* newBuffer = new value_type[new_capacity];
-	if (buffer != nullptr) {
-		size_t rightPartSize = std::min(newSize, Capacity - bufferStart);
+	size_t rightPartSize = std::min(newSize, Capacity - bufferStart); // if theres not enough space on the right side of buf start
 
-		std::copy_n(buffer + bufferStart, rightPartSize, newBuffer);
-		if (rightPartSize < newSize) {
-			size_t leftPartSize = newSize - rightPartSize;
-			std::copy_n(buffer, leftPartSize, newBuffer + rightPartSize);
-		}
+	std::copy_n(buffer + bufferStart, rightPartSize, newBuffer);
+	if (rightPartSize < newSize) {
+		size_t leftPartSize = newSize - rightPartSize;
+		std::copy_n(buffer, leftPartSize, newBuffer + rightPartSize);
 	}
 
 	delete[] buffer;
@@ -273,4 +279,21 @@ bool operator==(const CircularBuffer& a, const CircularBuffer& b) {
 
 bool operator!=(const CircularBuffer& a, const CircularBuffer& b) {
 	return !(a == b);
+}
+
+CircularBuffer& CircularBuffer::operator= (const CircularBuffer& cb) {
+	/*set_capacity(cb.capacity());
+	for (size_t i = 0; i < cb.size(); ++i) {
+		buffer[i] = cb.buffer[i]; 
+	}
+	bufferStart = cb.bufferStart;
+	Size = cb.Size;
+	return *this;*/
+	auto EQBuffer = new CircularBuffer(cb);
+	
+	/*buffer = (*EQBuffer).buffer;
+	bufferStart = cb.bufferStart;
+	Capacity = cb.Capacity;
+	Size = cb.Size;*/
+	return *EQBuffer;
 }

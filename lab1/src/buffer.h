@@ -17,6 +17,7 @@ public:
 	explicit CircularBuffer(int capacity); //////
 	//Конструирует буфер заданной ёмкости, целиком заполняет его элементом elem.
 	CircularBuffer(int capacity, const value_type& elem); //////
+	CircularBuffer(std::initializer_list<value_type> list);
 
 	//Доступ по индексу. Не проверяют правильность индекса.
 	value_type& operator[](int i); //////
