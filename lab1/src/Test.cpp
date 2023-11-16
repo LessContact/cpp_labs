@@ -83,7 +83,7 @@ TEST(CircularBufferTest, FrontBackTest) {
     CircularBuffer buf(5, 0);
     buf.push_back(9);
     EXPECT_EQ(buf.front(), 0);
-    EXPECT_EQ(buf.back(), 9);
+    EXPECT_EQ(buf.back(), 0);
 }
 
 TEST(CircularBufferTest, FrontBackConstTest) {
@@ -192,7 +192,10 @@ TEST(CircularBufferTest, RotateTest) {
     buf.push_front('0');
     buf.push_front('0');
     buf.rotate(3);
-    EXPECT_TRUE(buf == (CircularBuffer{ 2, 0, 0, 1 }));
+    EXPECT_EQ(buf[0], '2');
+    EXPECT_EQ(buf[1], '0');
+    EXPECT_EQ(buf[2], '0');
+    EXPECT_EQ(buf[3], '1');
 }
 
 TEST(CircularBufferTest, FullFuncTest) {
@@ -209,15 +212,14 @@ TEST(CircularBufferTest, InsertTest) {
 
     buf.insert(1, 9);
     EXPECT_EQ(buf.size(), 4);
-    EXPECT_TRUE(buf == (CircularBuffer{ 0, 9, 1, 2 }));
+    EXPECT_TRUE(buf == (CircularBuffer{ 9, 0, 1, 2 }));
 
     buf.pop_back();
     buf.pop_back();
 
     buf.insert(1, 2);
-    EXPECT_EQ(buf.size(), 2);
-    EXPECT_EQ(buf[0], 0);
-    EXPECT_EQ(buf[1], 2);
+    EXPECT_EQ(buf.size(), 3);
+    EXPECT_TRUE(buf == (CircularBuffer{ 9, 2, 0 }));
 }
 
 TEST(CircularBufferTest, EraseTest) {

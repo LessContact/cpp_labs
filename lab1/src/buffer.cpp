@@ -193,9 +193,21 @@ void CircularBuffer::pop_front() {
 }
 
 void CircularBuffer::insert(size_t pos, const value_type& item) {
-	size_t shift_quantity = size() - pos;
-	size_t absolute_pos = (bufferStart + pos) % capacity();
+	if (!is_linearized()) {
+		linearize();
+	}
+	size_t actualPos = pos % capacity();
 
+	size_t shiftCount = size() - actualPos;
+	size_t rightSideShiftCount = std::min(shiftCount, capacity() - actualPos - 1);
+
+	if (rightSideShiftCount < shiftCount) {
+		size_t leftSideShiftCount = shiftCount - rightSideShiftCount - 1;
+		std::copy_n(buffer, leftSideShiftCount, buffer + 1);
+		buffer[0] = buffer[capacity() - 1];
+	}
+
+	std::copy_n(buffer + actualPos, rightSideShiftCount, buffer + actualPos + 1);
 
 	if (capacity() == size()) {
 		if (pos != 0) {
@@ -206,7 +218,7 @@ void CircularBuffer::insert(size_t pos, const value_type& item) {
 		++Size;
 	}
 
-	buffer_[absolute_pos] = item;
+	buffer[actualPos] = item;
 }
 
 void CircularBuffer::erase(size_t first, size_t last) {
