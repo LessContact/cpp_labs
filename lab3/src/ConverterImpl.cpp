@@ -103,7 +103,7 @@ void MixConverter::Process()
     inputTrackSamples.resize(inputWav.header.sampleRate);
 
     WavParser extraWav = {};
-    inputWav.ReadWavHeader(extraWav.header, inputTrack);
+    extraWav.ReadWavHeader(extraWav.header, extraTrack);
     std::vector<int16_t> extraTrackSamples;
     extraTrackSamples.resize(extraWav.header.sampleRate);
 

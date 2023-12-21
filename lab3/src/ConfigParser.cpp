@@ -36,10 +36,6 @@ namespace ConfigParser
 
                 if (!(ss >> intervalEndSeconds)) throw std::runtime_error("Failed to get interval end.");
 
-                // converterQueue.push(ConverterFactory::Create<MuteConverter>(
-                //     converterQueue.empty() ? inputFilePath : inputs[0],
-                //     inputs[0],
-                //     intervalBeginSeconds, intervalEndSeconds));
                 converterQueue.push(std::make_shared<MuteConverter>(converterQueue.empty() ? inputFilePath : inputs[0],
                                                                     inputs[0],
                                                                     intervalBeginSeconds, intervalEndSeconds));
