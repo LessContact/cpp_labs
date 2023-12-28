@@ -49,20 +49,23 @@ namespace ConfigParser
                 if (!(ss >> mixFilePath)) throw std::runtime_error("Failed to get mix file reference");
 
                 ss >> insertTimeSeconds;
-                if (insertTimeSeconds < 0) throw std::runtime_error("Invalid time interval.");
-
+                //TODO: Check what if there is no dollar
+                uint32_t n = 0;
+                if (mixFilePath[0] == '$')
                 {
                     ss = std::stringstream(mixFilePath.data() + 1); // Skipping dollar
-                    uint32_t n = 0;
                     ss >> n;
-                    if (n > inputCount - 1)
-                        throw std::runtime_error("Mix track number is greater than input track count.");
-                    mixFilePath = inputs[n];
                 }
-                // converterQueue.push(ConverterFactory::Create<MixConverter>(
-                //     converterQueue.empty() ? inputFilePath : inputs[0],
-                //     inputs[0],
-                //     mixFilePath, insertTimeSeconds));
+                else
+                {
+                    ss = std::stringstream(mixFilePath.data());
+                    ss >> n;
+                }
+
+                if (n > inputCount - 1)
+                    throw std::runtime_error("Mix track number is greater than input track count.");
+                mixFilePath = inputs[n];
+
                 converterQueue.push(std::make_shared<MixConverter>(converterQueue.empty() ? inputFilePath : inputs[0],
                                                                    inputs[0],
                                                                    mixFilePath, insertTimeSeconds));
@@ -79,10 +82,12 @@ namespace ConfigParser
 
                 if (!(ss >> intervalEndSeconds)) throw std::runtime_error("Failed to get interval end.");
 
-                // converterQueue.push(ConverterFactory::Create<MuteConverter>(
-                //     converterQueue.empty() ? inputFilePath : inputs[0],
-                //     inputs[0],
-                //     intervalBeginSeconds, intervalEndSeconds, speedUpTimes));
+                if (!(ss >> speedUpTimes)) throw std::runtime_error("Failed to get speed up coefficient.");
+
+                converterQueue.push(std::make_shared<SpeedUpConverter>(
+                    converterQueue.empty() ? inputFilePath : inputs[0],
+                    inputs[0],
+                    intervalBeginSeconds, intervalEndSeconds, speedUpTimes));
             }
             else
                 throw std::runtime_error("Unknown converter");

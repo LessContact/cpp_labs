@@ -1,15 +1,29 @@
 #include "CommandLineParser.h"
+#include "ConfigParser.h"
 
-void CommandLineOptions::displayHelp(const std::map<std::string, CommandLineOptions::CommandInfo>& commands) {
+void CommandLineOptions::displayHelp() {
 
-    std::cout << "Usage: PCMprocess [-h] [-c config.txt output.wav input1.wav [input2.wav ...]]" << std::endl;
-    for (const auto& commandPair : commands) {
-        const auto& info = commandPair.second;
-        std::cout << info.option << ": " << info.brief << '\n';
+    std::cout << "Usage: PCMprocess [-h] [-c config.txt output.wav input1.wav [input2.wav ...]]\n" << std::endl;
+
+    std::queue<std::shared_ptr<Converter>> helpQueue;
+    helpQueue.push(std::make_shared<MuteConverter>());
+    helpQueue.push(std::make_shared<MixConverter>());
+    helpQueue.push(std::make_shared<SpeedUpConverter>());
+
+    std::cout << "Available Converters:" << std::endl;
+    while (!helpQueue.empty())
+    {
+        auto& currentConverter = helpQueue.front();
+
+        std::cout << currentConverter->GetSyntaxInfoString() << "\n" << std::endl;
+        std::cout << currentConverter->GetParametersInfoString() << "\n" << std::endl;
+        std::cout << currentConverter->GetFeaturesInfoString() << "\n" << std::endl;
+        helpQueue.pop();
     }
+
     std::cout << "config.txt example:"<< std::endl
         << "--------------------------------------------------------" << std::endl
-        << "# Mute 1st input file starting from 10 seconds 5 seconds\n"
+        << "# This is a comment\n"
         << "mute 10 5" << std::endl
         << "mix $2 5" << std::endl
         << "--------------------------------------------------------" << std::endl;
@@ -17,7 +31,7 @@ void CommandLineOptions::displayHelp(const std::map<std::string, CommandLineOpti
 
 bool CommandLineOptions::PrintHelpIfRequested(int argc, char* argv[]) {
     if(argc < 5){ std::cerr << "Not enougn arguments passed." << std::endl;
-        displayHelp(commands);
+        displayHelp();
         return true;}
 
     std::vector<std::string> args(argv + 1, argv + argc);
@@ -26,7 +40,7 @@ bool CommandLineOptions::PrintHelpIfRequested(int argc, char* argv[]) {
         return arg == "-h";
     }))
     {
-        displayHelp(commands);
+        displayHelp();
         return true;
     }
     return false;
