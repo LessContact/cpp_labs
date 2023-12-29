@@ -219,9 +219,6 @@ void SpeedUpConverter::Process()
         .sampleRate * (IntervalEndSeconds -
             IntervalBeginSeconds) / SpeedUpTimes))) * inputWav.header.numChannels * inputWav.header.bitsPerSample / 8;
 
-    // inputWav.header.subchunk2Size /= SpeedUpTimes;
-
-    // inputWav.header.chunkSize = 4 + (8 + inputWav.header.subchunk1Size) + (8 + inputWav.header.subchunk2Size);
     inputWav.header.chunkSize = 36 + inputWav.header.subchunk2Size;
     // ----------------
     outTrack.write(reinterpret_cast<const char*>(&inputWav), sizeof(inputWav));
